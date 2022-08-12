@@ -131,7 +131,10 @@ pub mod float {
         S: serde::Serializer,
     {
         use num_traits::ToPrimitive;
-        value.to_f64().unwrap().serialize(serializer)
+        match value.to_f64() {
+            Some(data) => data.serialize(serializer),
+            None => value.to_f32().unwrap().serialize(serializer)
+        }
     }
 }
 
@@ -179,7 +182,10 @@ pub mod float_option {
         match *value {
             Some(ref decimal) => {
                 use num_traits::ToPrimitive;
-                decimal.to_f64().unwrap().serialize(serializer)
+                match decimal.to_f64() {
+                    Some(data) => data.serialize(serializer),
+                    None => decimal.to_f32().unwrap().serialize(serializer)
+                }
             }
             None => serializer.serialize_none(),
         }
